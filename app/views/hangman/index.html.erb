@@ -1,0 +1,14 @@
+<h1>Hangman Game</h1>
+<p><%= @hangman.display_word %></p>
+
+<% if @hangman.game_over? %>
+  <p><%= @hangman.won? ? "You won!" : "You lost! The word was #{@hangman.word}" %></p>
+  <%= button_to "Play Again", reset_hangman_path, method: :delete, form: { data: { turbo: false } } %>
+<% else %>
+  <%= form_with url: hangman_index_path, method: :post, data: { turbo: false } do |form| %>
+    <%= form.label :guess, "Enter a letter:" %>
+    <%= form.text_field :guess, maxlength: 1 %>
+    <%= form.submit "Guess" %>
+  <% end %>
+  <p>Wrong guesses: <%= @hangman.wrong_guesses.join(', ') %></p>
+<% end %>
