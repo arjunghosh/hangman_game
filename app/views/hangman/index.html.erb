@@ -1,14 +1,136 @@
-<h1>Hangman Game</h1>
-<p><%= @hangman.display_word %></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .hangman-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .word-display {
+            font-size: 24px;
+            letter-spacing: 5px;
+            margin-top: 20px;
+        }
+        .chances {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .guess-input {
+            margin-top: 20px;
+        }
+        .hangman-drawing {
+            width: 400px;
+            height: 400px;
+            border: 2px solid #000;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: red;
+        }
+        .game-message.success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hangman Game</h1>
+    <div class="hangman-container">
+        <canvas id="hangmanCanvas" class="hangman-drawing" width="400" height="400"></canvas>
+        <div class="word-display" id="wordDisplay">_ _ _ _ _ _</div>
+        <div class="chances" id="chancesLeft">Chances Left: 6</div>
+        <div class="game-message" id="gameMessage"></div>
+        <div class="guess-input">
+            <label for="letterInput">Enter a letter:</label>
+            <input type="text" id="letterInput" maxlength="1" onkeydown="if(event.key==='Enter') submitGuess()">
+            <button onclick="submitGuess()">Guess</button>
+        </div>
+    </div>
+    <audio id="winSound" src="win.mp3"></audio>
+    <audio id="loseSound" src="lose.mp3"></audio>
+    <script>
+        let wrongGuesses = 0;
+        let correctGuesses = 0;
+        const word = "HANGMAN".split("");
+        let guessedLetters = new Set();
 
-<% if @hangman.game_over? %>
-  <p><%= @hangman.won? ? "You won!" : "You lost! The word was #{@hangman.word}" %></p>
-  <%= button_to "Play Again", reset_hangman_path, method: :delete, form: { data: { turbo: false } } %>
-<% else %>
-  <%= form_with url: hangman_index_path, method: :post, data: { turbo: false } do |form| %>
-    <%= form.label :guess, "Enter a letter:" %>
-    <%= form.text_field :guess, maxlength: 1 %>
-    <%= form.submit "Guess" %>
-  <% end %>
-  <p>Wrong guesses: <%= @hangman.wrong_guesses.join(', ') %></p>
-<% end %>
+        function drawHangman() {
+            const canvas = document.getElementById("hangmanCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = "#000";
+
+            const baseX = 100, baseY = 350;
+
+            ctx.beginPath();
+            ctx.moveTo(baseX, baseY);
+            ctx.lineTo(baseX + 200, baseY);
+            ctx.moveTo(baseX + 100, baseY);
+            ctx.lineTo(baseX + 100, baseY - 250);
+            ctx.lineTo(baseX + 150, baseY - 250);
+            ctx.lineTo(baseX + 150, baseY - 220);
+            ctx.stroke();
+
+            if (wrongGuesses > 0) { ctx.beginPath(); ctx.arc(baseX + 150, baseY - 200, 20, 0, Math.PI * 2); ctx.stroke(); }
+            if (wrongGuesses > 1) { ctx.moveTo(baseX + 150, baseY - 180); ctx.lineTo(baseX + 150, baseY - 120); ctx.stroke(); }
+            if (wrongGuesses > 2) { ctx.moveTo(baseX + 150, baseY - 170); ctx.lineTo(baseX + 120, baseY - 140); ctx.stroke(); }
+            if (wrongGuesses > 3) { ctx.moveTo(baseX + 150, baseY - 170); ctx.lineTo(baseX + 180, baseY - 140); ctx.stroke(); }
+            if (wrongGuesses > 4) { ctx.moveTo(baseX + 150, baseY - 120); ctx.lineTo(baseX + 130, baseY - 80); ctx.stroke(); }
+            if (wrongGuesses > 5) { ctx.moveTo(baseX + 150, baseY - 120); ctx.lineTo(baseX + 170, baseY - 80); ctx.stroke(); }
+        }
+
+        function updateWordDisplay() {
+            let display = word.map(letter => guessedLetters.has(letter) ? letter : "_").join(" ");
+            document.getElementById("wordDisplay").innerText = display;
+            if (!display.includes("_")) {
+                document.getElementById("gameMessage").innerText = "Congratulations! You Won!";
+                document.getElementById("gameMessage").classList.add("success");
+                document.getElementById("winSound").play();
+            }
+        }
+
+        function submitGuess() {
+            const letter = document.getElementById("letterInput").value.toUpperCase();
+            if (!letter.match(/[A-Z]/) || letter.length !== 1 || guessedLetters.has(letter)) return;
+            document.getElementById("letterInput").value = "";
+            guessedLetters.add(letter);
+
+            if (word.includes(letter)) {
+                correctGuesses++;
+                updateWordDisplay();
+            } else {
+                wrongGuesses++;
+                document.getElementById("chancesLeft").innerText = "Chances Left: " + (6 - wrongGuesses);
+                drawHangman();
+                if (wrongGuesses >= 6) {
+                    document.getElementById("gameMessage").innerText = "Game Over! You Lost!";
+                    document.getElementById("loseSound").play();
+                }
+            }
+        }
+
+        drawHangman();
+        updateWordDisplay();
+    </script>
+</body>
+</html>
