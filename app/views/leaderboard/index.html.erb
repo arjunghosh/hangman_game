@@ -1,0 +1,24 @@
+<div class="max-w-2xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg">
+  <h1 class="text-3xl font-bold mb-4 text-green-700">Global Leaderboard</h1>
+  <div class="mb-4 p-3 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded">
+    <strong>Leaderboard Rules:</strong> Top 10 players are ranked by their highest single-game score. Play more to climb the ranks! Loyalty coins are awarded for wins and streaks.
+  </div>
+  <table class="min-w-full table-auto border-collapse">
+    <thead>
+      <tr class="bg-green-100 text-green-800">
+        <th class="px-4 py-2 text-left">Rank</th>
+        <th class="px-4 py-2 text-left">Player</th>
+        <th class="px-4 py-2 text-left">Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @scores.each_with_index do |score, index| %>
+        <tr class="border-b hover:bg-green-50">
+          <td class="px-4 py-2 font-bold"><%= index + 1 %></td>
+          <td class="px-4 py-2"><%= score.player_name %></td>
+          <td class="px-4 py-2"><%= score.points %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

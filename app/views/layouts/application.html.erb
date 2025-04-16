@@ -17,12 +17,40 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow p-4 flex items-center justify-between">
+      <h1 class="text-2xl font-bold text-green-600">Hangman Game</h1>
+      <div>
+        <% if session[:user_id] && (current_user = User.find_by(id: session[:user_id])) %>
+          <div class="flex items-center gap-4">
+            <img src="<%= current_user.image %>" alt="<%= current_user.name %>" class="w-8 h-8 rounded-full border">
+            <span class="font-semibold text-gray-700"><%= current_user.name %></span>
+            <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded text-xs font-bold">HangCoins: <%= current_user.coins %></span>
+            <form action="/logout" method="post" class="inline">
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <button type="submit" class="ml-2 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">Logout</button>
+            </form>
+            <form action="/users/toggle_email" method="post" class="inline ml-4">
+              <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+              <button type="submit" class="px-3 py-1 rounded border <%= current_user.opt_in_email ? 'bg-green-100 text-green-700 border-green-400' : 'bg-gray-200 text-gray-600 border-gray-400' %>">
+                <%= current_user.opt_in_email ? 'Email: ON' : 'Email: OFF' %>
+              </button>
+            </form>
+          </div>
+        <% else %>
+          <a href="/auth/google_oauth2" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded font-bold">Sign in with Google</a>
+        <% end %>
+      </div>
+    </header>
+    <main class="flex-1 flex flex-col items-center justify-center p-4">
+      <%= yield %>
+    </main>
+    <footer class="bg-white text-center text-gray-500 p-2 shadow-inner">
+      &copy; <%= Time.current.year %> Hangman Game. All rights reserved.
+    </footer>
   </body>
 </html>

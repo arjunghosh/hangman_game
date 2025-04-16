@@ -4,65 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hangman Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f8f8f8;
-        }
-        h1 {
-            margin-top: 20px;
-        }
-        .hangman-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        .word-display {
-            font-size: 24px;
-            letter-spacing: 5px;
-            margin-top: 20px;
-        }
-        .chances {
-            font-size: 18px;
-            margin-top: 10px;
-        }
-        .guess-input {
-            margin-top: 20px;
-        }
-        .hangman-drawing {
-            width: 400px;
-            height: 400px;
-            border: 2px solid #000;
-            background-color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .game-message {
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 20px;
-            color: red;
-        }
-        .game-message.success {
-            color: green;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Hangman Game</h1>
-    <div class="hangman-container">
-        <canvas id="hangmanCanvas" class="hangman-drawing" width="400" height="400"></canvas>
-        <div class="word-display" id="wordDisplay">_ _ _ _ _ _</div>
-        <div class="chances" id="chancesLeft">Chances Left: 6</div>
-        <div class="game-message" id="gameMessage"></div>
-        <div class="guess-input">
-            <label for="letterInput">Enter a letter:</label>
-            <input type="text" id="letterInput" maxlength="1" onkeydown="if(event.key==='Enter') submitGuess()">
-            <button onclick="submitGuess()">Guess</button>
+<body class="bg-gray-100 font-sans text-center">
+    <h1 class="text-4xl font-bold mt-8">Hangman Game</h1>
+    <div class="w-full max-w-xl mx-auto mt-8 p-6 bg-white rounded-lg shadow-lg flex flex-col items-center">
+        <canvas id="hangmanCanvas" class="border-2 border-gray-400 bg-gray-50 rounded mb-6" width="400" height="400"></canvas>
+        <div class="word-display text-3xl tracking-widest font-mono mb-4" id="wordDisplay">_ _ _ _ _ _</div>
+        <div class="chances text-lg text-gray-700 mb-2" id="chancesLeft">Chances Left: 6</div>
+        <div class="game-message text-xl font-bold mb-4" id="gameMessage"></div>
+        <div class="guess-input flex items-center gap-2 mb-4">
+            <label for="letterInput" class="mr-2 font-semibold">Enter a letter:</label>
+            <input type="text" id="letterInput" maxlength="1" class="border rounded px-2 py-1 w-16 text-center focus:outline-none focus:ring-2 focus:ring-green-400">
+            <button onclick="submitGuess()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-4 rounded transition">Guess</button>
         </div>
     </div>
     <audio id="winSound" src="win.mp3"></audio>
